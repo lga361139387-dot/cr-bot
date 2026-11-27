@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "crbot": {
+      "command": "node",
+      "args": ["C:/Users/Lixiaoyao/IdeaProjects/crbot/mcp/stdio-bridge.mjs"],
+      "env": {
+        "CRBOT_BASE_URL": "http://127.0.0.1:8080",
+        "CRBOT_MCP_TOKEN": "替换成 POST /api/v1/auth/mcp-token 返回的 token"
+      }
+    }
+  }
+}

@@ -1,0 +1,4 @@
+services:
+  api:
+    environment:
+      CRBOT_DEMO_ENABLED: "true"

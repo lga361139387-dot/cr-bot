@@ -1,0 +1,65 @@
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    environment:
+      POSTGRES_DB: crbot
+      POSTGRES_USER: crbot
+      POSTGRES_PASSWORD: crbot
+    ports:
+      - "5432:5432"
+    volumes:
+      - crbot-pg:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U crbot -d crbot"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  redis:
+    image: redis:7
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  api:
+    build: ./backend
+    environment:
+      CRBOT_DB_URL: jdbc:postgresql://postgres:5432/crbot
+      CRBOT_DB_USER: crbot
+      CRBOT_DB_PASSWORD: crbot
+      CRBOT_REDIS_URL: redis://redis:6379
+      GITLAB_BASE_URL: ${GITLAB_BASE_URL:-}
+      GITLAB_TOKEN: ${GITLAB_TOKEN:-}
+      GITLAB_WEBHOOK_SECRET: ${GITLAB_WEBHOOK_SECRET:-change-me-webhook}
+      LLM_BASE_URL: ${LLM_BASE_URL:-}
+      LLM_API_KEY: ${LLM_API_KEY:-}
+      LLM_MODEL: ${LLM_MODEL:-}
+      CRBOT_DEMO_ENABLED: ${CRBOT_DEMO_ENABLED:-false}
+      EMBEDDING_BASE_URL: ${EMBEDDING_BASE_URL:-}
+      EMBEDDING_MODEL: ${EMBEDDING_MODEL:-}
+      EMBEDDING_API_KEY: ${EMBEDDING_API_KEY:-}
+      JWT_SECRET: ${JWT_SECRET:-crbot-dev-jwt-secret-change-me-32}
+      CRBOT_ADMIN_USERNAME: ${CRBOT_ADMIN_USERNAME:-admin}
+      CRBOT_ADMIN_PASSWORD: ${CRBOT_ADMIN_PASSWORD:-admin123}
+      CRBOT_ENC_KEY: ${CRBOT_ENC_KEY:-crbot-dev-enc-key-change-me}
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  web:
+    build: ./frontend
+    ports:
+      - "5173:80"
+    depends_on:
+      - api
+
+volumes:
+  crbot-pg:

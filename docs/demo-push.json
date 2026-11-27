@@ -1,0 +1,18 @@
+{
+  "object_kind": "push",
+  "ref": "refs/heads/master",
+  "before": "1111111111111111111111111111111111111111",
+  "after": "2222222222222222222222222222222222222222",
+  "user_name": "demo",
+  "user_email": "demo@example.com",
+  "project": {
+    "id": 1,
+    "path_with_namespace": "demo/order"
+  },
+  "commits": [
+    {
+      "id": "2222222222222222222222222222222222222222",
+      "message": "订单取消仍调用旧状态"
+    }
+  ]
+}

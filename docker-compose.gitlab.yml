@@ -1,0 +1,32 @@
+# 本地测试用 GitLab Community Edition 11.8.0。
+# 与 CRBOT 主编排分开：镜像大、启动慢，不要跟 api/web 绑在一次 build 里。
+# 浏览器：http://127.0.0.1:8929
+# SSH：ssh://git@127.0.0.1:2224/<group>/<project>.git
+services:
+  gitlab:
+    image: gitlab/gitlab-ce:11.8.0-ce.0
+    container_name: crbot-gitlab
+    hostname: gitlab.local
+    shm_size: "256m"
+    ports:
+      - "8929:8929"
+      - "2224:22"
+    environment:
+      GITLAB_OMNIBUS_CONFIG: |
+        external_url 'http://127.0.0.1:8929'
+        gitlab_rails['gitlab_shell_ssh_port'] = 2224
+    volumes:
+      - gitlab-config:/etc/gitlab
+      - gitlab-logs:/var/log/gitlab
+      - gitlab-data:/var/opt/gitlab
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://127.0.0.1:8929/users/sign_in >/dev/null"]
+      interval: 30s
+      timeout: 10s
+      retries: 30
+      start_period: 240s
+
+volumes:
+  gitlab-config:
+  gitlab-logs:
+  gitlab-data:
